@@ -1,0 +1,405 @@
+= ITE-0000: Tiers and an evidence criterion for predicates
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 0000
+
+| Title
+| Tiers and an evidence criterion for predicates
+
+| Sponsor
+| link:https://github.com/astrogilda[Sankalp Gilda]
+
+| Status
+| Draft
+
+| Type
+| Process
+
+| Created
+| 2026-08-08
+
+| Requires
+| ITE-1, ITE-9
+
+| Discussions-To
+| in-toto-dev@googlegroups.com, and the monthly in-toto community meeting
+|===
+
+[[abstract]]
+== Abstract
+
+The community meeting of 2026-08-07 agreed to file a process ITE establishing two
+tiers for the predicate directory in `in-toto/attestation`, a vetted tier and a
+contrib tier, and named nobody to write it. It left three questions open: whether
+the original purpose of the vetted predicates is still tenable given LLMs, whether
+the repository should become a hosting location for predicates, and whether the
+maintainers have the expertise for what gets submitted.
+
+This ITE proposes the tiers and the rule that sorts a submission into one. The rule
+is evidence a reviewer can check: a conformance corpus with negative controls, an
+implementation built from the specification text by someone other than its author,
+and published run results including one taken blind, released as a signed bundle.
+Three doors lead into vetted, so more than one kind of submitter can reach it.
+
+Publication is gated on none of it. A submission offering none of it is listed in
+contrib, which this ITE treats as a full-status home. The evidence is required only
+to claim vetted, and it is chosen so a maintainer who is not an expert in the
+submission's domain can still check it.
+
+[[specification]]
+== Specification
+
+=== Scope
+
+ITE-9 fixed what a predicate submission must contain. It does not define what makes
+one acceptable, and that missing half is why the meeting's two-tier idea has nothing
+to sort on. This ITE supplies it. The ITE-9 document format, namespace assignment and the
+optional protobuf definition are all left exactly as they are.
+
+The criterion is orthogonal to subject-matter scoping and composes with it. The same
+meeting recorded a scoping proposal, "Aditya: Vetted could be for fundamental SDLC
+types that lend themselves to reuse", which asks what a type is _about_; this asks
+whether a specification is _determinate_. If the project adopts a subject-matter
+scope, a vetted type MUST satisfy both, and a determinate type out of scope is a
+contrib type.
+
+=== The tiers
+
+`contrib`:: A predicate type that is hosted and listed. Admission requires what it
+requires today: a specification in the ITE-9 format, and a maintainer check that it
+is not a duplicate and not actively harmful. In the words ITE-9 already uses of the
+library, types listed here "are not mandated or endorsed".
+
+`vetted`:: A predicate type whose specification is determinate and has been
+independently implemented. Admission requires everything contrib requires, plus the
+evidence below through any of the three doors, plus any subject-matter scope the
+project adopts.
+
+Every submission lands in contrib by default and is listed; failing the criterion is
+not a ground for rejection. In the registry vocabulary of RFC 8126, contrib is a
+Specification Required policy and vetted is Expert Review against a published
+criterion.
+
+[cols="4,3,3"]
+|===
+| | `contrib` | `vetted`
+
+| ITE-9 format, not a duplicate, not harmful
+| required
+| required
+
+| Index record
+| required
+| required
+
+| E1 corpus with negative controls
+| optional
+| required
+
+| E2 implementation by a second person
+| optional
+| required
+
+| E3 runs, one blind, defect record
+| optional
+| required
+
+| Signed evidence bundle
+| optional
+| required
+
+| Generated language bindings
+| on request, with a protobuf definition
+| on request, with a protobuf definition
+|===
+
+Bindings are not a tier privilege and tier does not control namespace. Nine of the
+thirteen listed types have generated Go bindings and five carry URIs in namespaces
+this project does not control, so making either a consequence of tier would create a
+rule the current directory violates on the day it ships.
+
+[[criterion]]
+=== The criterion
+
+To be placed in vetted, a predicate type MUST ship three items of evidence in a
+signed bundle. Each is published, each can be checked by anyone, and none requires
+the checker to be an expert in the predicate's domain.
+
+E1: a conformance corpus with negative controls::
+Complete in-toto Statements, each labelled `MUST-ACCEPT`, `MUST-REJECT` or `INDETERMINATE`. Every `MUST-REJECT` vector
+cites the clause that rejects it and the layer at which rejection occurs; a vector
+rejected by schema validation alone does not count toward coverage, because
+generated bindings already enforce that and such a vector tests the parser.
+Rejection is a property the specification declares: the framework's default is that
+"Consumers MUST ignore unrecognized fields unless otherwise noted in the predicate
+specification", so a `MUST-REJECT` resting on a constraint the text never states is a
+defect in the corpus. Every `INDETERMINATE` vector states which readings the
+specification admits. Coverage is a count the runner emits, over every required field, every field constrained to a range or enumeration, and every parsing rule
+declared as differing from the defaults; those are derivable from the schema, so the
+number is a fact anyone can recompute. Vectors MAY be generated or hand-written, and
+generated vectors are a floor, since a generator cannot see the semantic cases a
+reader can. The corpus is published, reachable from its index record, and run in CI
+on every change to the specification.
+
+E1 extends a floor the repository already documents. `docs/testing.md` says "At a
+minimum, we suggest testing JSON marshalling and unmarshalling of the Go language
+bindings"; E1 makes that checkable and adds the rejecting half. That half is
+load-bearing, because a corpus of valid examples shows only that the author can
+write one valid document, and what a reviewer learns from a corpus is what the
+specification refuses.
+
+E2: an implementation built from the specification text by someone other than its author::
+A named person, not an organisation, who was not a contributor to the
+specification as of the commit their first run was taken against, who has consented
+publicly to being named, and who states what their runs do and do not establish.
+Contributions after that commit are the point of the exercise and MUST NOT be
+treated as disqualifying. The implementation need not be complete or
+production-grade; a validator that reads a Statement and decides is sufficient. The
+language and principal tooling behind each implementation MUST be declared, because
+that is where correlation between two apparently independent readings lives.
+
+E3: published run results, at least one blind, with a defect record::
+Each implementation's run against the full corpus, carrying the specification commit and
+corpus digest; a `blind` or `directed` label on every run; at least one blind run whose ordering is established by artifact; and a record of every place two
+implementations initially disagreed and what resolved it. The corpus is committed,
+or its digest published, before the second implementer's first run, and the blind
+implementation and its output are each committed on their own ahead of any commit
+changing the corpus or specification. An empty defect record is possible and admits a
+submission, though it is unexplained; the submission then records either a further
+blind run or why the schema surface is small enough that agreement was expected.
+
+The three items are published as an in-toto Statement signed by the party that
+produced them: subject, the corpus digest and specification commit; predicate, the
+run records, defect record and implementation report. Each implementer signs their
+own runs. This costs a submitter nothing they do not have, since envelope, Statement
+format and tooling all live in this repository.
+
+Where a schema is wholly delegated to an external specification that maintains its
+own conformance suite, E1 and E2 are satisfied by citing that suite as the index
+record's normative reference, and the submission ships vectors only for the in-toto
+binding layer. Three of the thirteen listed types are that shape, and this is how the
+conformance work of SPDX, CycloneDX and any future body counts here without being
+rebuilt here.
+
+[[doors]]
+=== Three doors into vetted
+
+A single gate admits a single kind of submitter. Each door supplies the independence
+E2 is about from a different side.
+
+. A commissioned second implementer. E1 through E3 as written.
+. Observed adoption. A contrib type in independent production use by parties
+  unrelated to its author MAY be promoted without a commissioned second
+  implementation, where that use is evidenced by published attestations or named
+  adopters, and MUST still ship E1. Independent producers and consumers that already
+  interoperate are independent implementations.
+. An independently authored corpus. A corpus written by someone other than the
+  specification's author, run against the author's own implementation, satisfies E1
+  through E3 in the inverse direction. This admits the submitter who can find
+  someone to write vectors but not someone to write an implementation.
+
+=== The index, and moving between tiers
+
+A machine-readable index record per type carries the short name, the `predicateType`
+URI, the location of the specification, the tier, a status of `active`,
+`deprecated`, `withdrawn` or `observed`, and the change controller. Status is the
+security control: a directory that can only add entries has no response available
+when a hosted type turns out to be superseded or harmful. `observed` records make
+this the registry of predicate types rather than only of hosted ones, which the
+meeting asked for in the words "Puerco: Would be nice to have a registry of types for
+people like myself".
+
+Promotion:: A pull request adding the evidence bundle. Maintainers confirm CI is
+green on the corpus, that the second implementer (or, under door three, the corpus
+author) is named and has consented, that a defect record is present, and that the
+signature verifies. That is a check that the evidence exists and passes, and it does
+not re-derive the domain judgement. ITE-9 already requires community communication
+for a new type and the same communication carries a promotion, so this ITE adds a
+venue and no mechanism. An objection period runs before the tier changes, defaulting
+to fourteen days from the announcement or one full community meeting cycle,
+whichever is longer; governance MAY set another value. A promotion request with no
+activity for a month SHOULD move to deferred and MAY be re-opened at any time, the
+timeline ITE-1 applies to ITEs themselves. contrib entries do NOT expire.
+
+Demotion and deprecation:: A vetted type whose corpus ceases to pass, or which is
+superseded, moves to `deprecated` with a pointer to its replacement. A hosted type
+found to be harmful moves to `withdrawn`. Neither path exists today and both are
+needed regardless of what this ITE decides about tiers.
+
+Contest:: Every decision under this criterion is contestable with evidence: a tier
+decision by producing the evidence the criterion names, a demotion by re-running the
+corpus green and linking the run. A contest does not require the maintainers to
+re-open the domain judgement, nor the contesting party to be an expert in anything
+except their own type.
+
+[[motivation]]
+== Motivation
+
+The current process asks a reviewer to read a specification and judge whether it is
+good. Reading scales worst with volume, is what fluent text passes most easily, and
+requires the reviewer to hold enough domain expertise to know whether the model is
+right, and all three unanswered questions land on it at once.
+
+The cost is already visible. The meeting recorded a live instance, "Kubernetes about
+to start verifying attestations and just realized they weren't being correctly
+produced", found by the consumer, at verification time, after publication. An
+evidence criterion detects that failure class before publication, which is where
+reading a specification is weakest.
+
+It also changes what a maintainer must be able to do. Reading asks them to hold the
+domain; under an evidence criterion they check that two parties who did not
+coordinate reached the same decisions on a published corpus and resolved their
+disagreements in the text, which is possible without domain expertise and mostly
+done by CI. That answers the expertise question directly.
+
+[[reasoning]]
+== Reasoning
+
+The argument in full, every alternative considered and why each was rejected, the
+tooling this proposes the project publish, and the open questions are in
+link:COMPANION.adoc[the companion document], which argues for this proposal and
+normatively states none of it. Three points belong here.
+
+Evidence has a property a judgement does not: the submitter can run it before
+submitting, which removes most of the round-trips that make the queue slow. The shape
+is not novel. The W3C Process, when assessing implementation experience, asks "are
+there independent interoperable implementations of the current specification?" and,
+as a separate item, "are there implementations created by people other than the
+authors of the specification?" The second is E2 almost verbatim. RFC 2026 conditions
+advancement to Draft Standard on "at least two independent and interoperable
+implementations from different code bases".
+
+It does not judge whether a predicate is a good idea, and that is the largest
+limitation. The criterion measures determinacy, meaning whether two people reading a
+specification reach the same decisions, so a well-specified bad idea passes. It replaces
+the first of the two review questions and leaves the second where it is.
+
+It costs a submitter a second person, which is the expensive part, and the project
+can lower that cost far more cheaply than any individual submitter can: any second
+person counts, a `seeking second implementer` label costs nothing, and the meeting
+can carry a standing slot for the ask.
+
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+This ITE amends one sentence of ITE-9, and says so here so nobody has to notice it
+later. ITE-9 describes the library as one that "provides peer-reviewed definitions of
+predicate types"; under two tiers that sentence describes vetted and not contrib, and
+it is amended to say so.
+
+Existing vetted predicates are not re-evaluated and MUST NOT be demoted by the
+adoption of this ITE. `predicateType` URIs do not change, file paths are preserved,
+and open submissions land in contrib.
+
+[[security]]
+== Security
+
+The risk it addresses is a producer and a consumer disagreeing about what an
+attestation says, discovered at verification time. Two independent implementations
+disagreeing on a published corpus is the cheapest available detector for that, and it
+runs before publication.
+
+The risk it introduces is that vetted is a trust signal and trust signals are
+over-read. The style guide raised at the same meeting names three personas for this
+surface: a Security Architect, a Pragmatic Developer and an Incidental Consumer. It is
+the third who will read vetted as "safe". The directory MUST therefore define vetted
+as meaning the specification is determinate and has been independently implemented,
+and state that adjacent to both listings.
+
+Evidence can be fabricated. Signing binds each run to a key rather than to a claim in
+a pull-request description, and the corpus digest prevents a corpus being rewritten
+after a run it did not pass. Neither prevents a determined author manufacturing a
+second implementer, which no process rule can.
+
+[[infrastructure]]
+== Infrastructure Requirements
+
+Mostly existing machinery. The repository already runs CI across Go, Python, Java and
+Rust bindings and already documents a minimum testing expectation; a conformance
+corpus is a set of JSON Statements exercised by that harness and the CI addition is a
+job that runs it. New, and small: the index file, its schema and its generator, plus
+the five other artifacts named in the companion. No hosting cost change, since a
+corpus may live in the submitter's own repository pinned by digest.
+
+[[testing]]
+== Testing
+
+This ITE makes a claim testable before adoption, and the first test has been run. The
+criterion was applied on paper, as of 2026-08-08, to all thirteen listed vetted types
+and all eight open predicate pull requests. No current entry and no open submission satisfies E1
+today, including the drafter's own. No listed type ships a conformance
+corpus in this repository, and every open predicate pull request consists of a
+specification document, the directory listing and in three cases a protobuf
+definition; none ships vectors, an index record or a signed bundle. The drafter's
+pull request 570 is one of the eight and fails on those terms too.
+
+That result is why the falsification conditions read as they do. A criterion nobody
+has yet done the work for admits nobody on the day it is written, which is a fact
+about a new requirement rather than evidence of mis-calibration. The criterion is
+mis-calibrated, and MUST be changed, if any of the following holds:
+
+. Twelve months after adoption, either the submissions promoted under it are only
+  those authored by the people who proposed it, or fewer than two types authored by
+  unrelated parties have been promoted through any of the three doors.
+. The criterion marks as failing a type demonstrably interoperating in the field
+  between independent producers and consumers.
+. Any of the six artifacts named in the companion is unpublished one release cycle
+  after adoption. The claim that a submitter can self-check is false until they exist.
+
+Each condition names a date, a count or an artifact, so whether it has fired is a
+matter of record rather than opinion.
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+The runnable parts accompany this ITE's pull request, in a fork, as one candidate
+layout the maintainers may replace wholesale: an index schema and a generator that
+emits a first index from the current `spec/predicates` directory and reconciles it
+against `layouts/index.redirects`; a submission checker; a reference validator built
+on `docs/validation.md` and the existing `rust/src/validator.rs`; a corpus-runner make
+target and its CI job; a vector generator that computes coverage; and generators for
+the implementation-report table and for proposed `observed` records.
+
+A public worked example of an evidence bundle in the E1-E3 shape already exists and is
+linked below. It is an existence proof of the format, explicitly not a template the
+criterion is shaped around: the dry run above records that bundle failing E1.
+
+[[references]]
+== References
+
+. link:https://github.com/in-toto/ITE/tree/master/ITE/1[ITE-1: in-toto Enhancement Format]
+. link:https://github.com/in-toto/ITE/tree/master/ITE/9[ITE-9: Introducing new in-toto Attestation types]
+. link:https://github.com/in-toto/attestation/blob/main/docs/new_predicate_guidelines.md[Guidelines for new predicates]
+. link:https://github.com/in-toto/attestation/blob/main/spec/predicates/README.md[The predicate directory]
+. link:https://github.com/in-toto/attestation/blob/main/docs/testing.md[Testing guidance for bindings]
+. link:https://repos.openssf.org/attestations-style-guide[OpenSSF attestations style guide]
+. link:https://www.w3.org/policies/process/[W3C Process Document]
+. link:https://www.rfc-editor.org/rfc/rfc2026[RFC 2026]
+. link:https://www.rfc-editor.org/rfc/rfc8126[RFC 8126]
+. link:COMPANION.adoc[Companion: reasoning, alternatives, tooling and open questions]
+
+[[disclosure]]
+== Disclosure
+
+The drafter has a predicate submission open against this repository, pull request
+570, and this ITE proposes the rule by which it would be judged. Three things follow.
+
+The dry run above was run against that submission on the same terms as every other,
+and it fails. Where the criterion and the drafter's own evidence bundle differ, the
+criterion is what this ITE proposes.
+
+The drafter will not participate in the tier decision for their own submission, and
+asks that it be among the last considered rather than the first.
+
+An earlier revision made a namespace URI a consequence of vetted. That is not what the
+guidelines say, it is not what five of the thirteen listed types do, and the drafter's
+own submission claims such a URI, so the rule was removed rather than argued for.
+
+This draft is offered as material for whoever the ITE Editors want to own the process
+ITE the meeting agreed to file.
