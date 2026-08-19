@@ -47,44 +47,107 @@ implementation built from the specification text by someone other than its autho
 and published run results including one taken blind, released as a signed bundle.
 Three doors lead into vetted, so more than one kind of submitter can reach it.
 
-Publication is gated on none of it. A submission offering none of it is listed in
-contrib, which this ITE treats as a full-status home. The evidence is required only
-to claim vetted, and it is chosen so a maintainer who is not an expert in the
-submission's domain can still check it.
+Nothing here changes who gets published. A submission that meets today's bar is
+accepted and listed exactly as it is today, in the contrib tier. The evidence is what
+a type needs in addition, and only if it wants to be listed as vetted. A submission
+that offers no evidence is not rejected and is not held in a queue; it is published in
+contrib, which this ITE treats as a permanent home rather than a waiting room.
+
+The evidence is chosen so that a maintainer who knows nothing about the submission's
+subject can still check it.
 
 [[specification]]
 == Specification
 
 === Scope
 
-ITE-9 fixed what a predicate submission must contain. It does not define what makes
-one acceptable, and that missing half is why the meeting's two-tier idea has nothing
-to sort on. This ITE supplies it. The ITE-9 document format, namespace assignment and the
-optional protobuf definition are all left exactly as they are.
+ITE-9 fixed what a predicate submission must contain. It does not say what makes one
+acceptable, and that missing half is why a two-tier idea has nothing to sort on. This
+ITE supplies the sorting rule and nothing else.
 
-The criterion is orthogonal to subject-matter scoping and composes with it. The same
+This ITE changes::
+The predicate directory gains two tiers, a published rule for which tier a type lands
+in, a machine-readable index, and a defined path for a type to move between tiers or
+leave.
+
+This ITE does not change::
+The ITE-9 document format, namespace assignment, the optional protobuf definition,
+who may publish, or the status of any type listed today.
+
+[[determinate]]
+=== Determinate
+
+_Determinate_ is used throughout this document in one specific sense, and it is not a
+judgement about quality, completeness or scope:
+
+[NOTE]
+====
+A predicate specification is *determinate* when two competent readers, implementing
+from the specification text alone and without consulting each other, reach the *same
+accept-or-reject decision on the same input document*.
+====
+
+A determinate specification can still describe a narrow, incomplete or ill-advised
+predicate. A specification can be thorough, well scoped and genuinely useful and still
+be indeterminate, if two readers disagree about whether a given field is required, or
+about what a consumer must do when it is absent. Determinacy is a property of how
+precisely the text pins down behaviour, not of how much ground it covers or how good
+an idea it is.
+
+This matters because it is the only property the criterion measures, and it is the
+reason the criterion can be checked by someone with no expertise in the predicate's
+subject: disagreement between two independent readers is observable without knowing
+which reader is right.
+
+Determinacy is orthogonal to subject-matter scoping and composes with it. The same
 meeting recorded a scoping proposal, "Aditya: Vetted could be for fundamental SDLC
 types that lend themselves to reuse", which asks what a type is _about_; this asks
-whether a specification is _determinate_. If the project adopts a subject-matter
-scope, a vetted type MUST satisfy both, and a determinate type out of scope is a
-contrib type.
+whether its specification is determinate. If the project adopts a subject-matter
+scope, a vetted type MUST satisfy both, and a determinate type that is out of scope
+is a contrib type.
 
 === The tiers
+
+The predicate directory is a registry, and RFC 8126 is the standing vocabulary for
+registry admission policies. Naming the two tiers in that vocabulary first is the
+shortest way to say what they are:
+
+* *contrib* is RFC 8126 _Specification Required_ — a submission is admitted on the
+  existence of a specification of adequate quality, reviewed by a designated expert
+  for that and nothing more.
+* *vetted* is RFC 8126 _Expert Review_, against a criterion that is published in
+  advance rather than held in the reviewer's head.
+
+The whole of this ITE is an argument about what that published criterion should be.
+Everything else follows from it.
 
 `contrib`:: A predicate type that is hosted and listed. Admission requires what it
 requires today: a specification in the ITE-9 format, and a maintainer check that it
 is not a duplicate and not actively harmful. In the words ITE-9 already uses of the
 library, types listed here "are not mandated or endorsed".
 
-`vetted`:: A predicate type whose specification is determinate and has been
-independently implemented. Admission requires everything contrib requires, plus the
-evidence below through any of the three doors, plus any subject-matter scope the
-project adopts.
+`vetted`:: A predicate type whose specification is determinate, in the sense defined
+in <<determinate>>, and has been independently implemented. Admission requires
+everything contrib requires, plus the evidence below through any of the three
+promotion paths, plus any subject-matter scope the project adopts.
 
-Every submission lands in contrib by default and is listed; failing the criterion is
-not a ground for rejection. In the registry vocabulary of RFC 8126, contrib is a
-Specification Required policy and vetted is Expert Review against a published
-criterion.
+Every submission lands in contrib by default and is listed. Failing the criterion is
+not a ground for rejection.
+
+[NOTE]
+.On the tier names
+====
+The tier names are not load-bearing and the Editors should use whichever pair they
+prefer; a rename is a mechanical substitution in this document. Two observations for
+that choice. `vetted` is the incumbent term: it is what `docs/new_predicate_guidelines.md`
+already calls the list today, so keeping it renames nothing already published, while
+`core` would rename an existing published concept in a document that is not otherwise
+proposing to touch it. `contrib` matches the convention this comment suggests and is
+used here for that reason, though in Debian's archive layout `contrib` already means
+packages depending on non-free ones — a faintly second-class sense this ITE spends
+effort arguing against, where the meeting's other suggestion, `community`, carries no
+such freight.
+====
 
 [cols="4,3,3"]
 |===
