@@ -552,12 +552,43 @@ attestation says, discovered at verification time. Two independent implementatio
 disagreeing on a published corpus is the cheapest available detector for that, and it
 runs before publication.
 
-The risk it introduces is that vetted is a trust signal and trust signals are
-over-read. The style guide raised at the same meeting names three personas for this
-surface: a Security Architect, a Pragmatic Developer and an Incidental Consumer. It is
-the third who will read vetted as "safe". The directory MUST therefore define vetted
-as meaning the specification is determinate and has been independently implemented,
-and state that adjacent to both listings.
+The risk it introduces has two halves, and they point in opposite directions.
+
+The first half is over-reading `vetted`. A tier label is a trust signal, and a reader
+who sees one tends to infer more from it than it says. The style guide raised at the
+same meeting names three personas for this surface: a Security Architect, a Pragmatic
+Developer and an Incidental Consumer. It is the third who will read `vetted` as
+"safe", when what it actually means is narrower: that the specification is
+determinate and that somebody other than its author implemented it. It does not mean
+the predicate is a good idea, that it is appropriate for a given use, or that any
+particular implementation of it is correct. The directory MUST therefore state what
+`vetted` means, in those terms, adjacent to both listings rather than only in this
+ITE.
+
+The second half is the converse, and it is the more serious of the two. Introducing a
+tier makes `contrib` a place where a fundamentally broken predicate type can sit,
+listed, indefinitely — not merely unvetted but wrong, in the sense that two
+implementers reading it would build non-interoperating consumers. Today that type
+would either be scrutinised into shape or not listed at all; under this ITE it is
+published, and a reader who does not notice the tier label may adopt it. This ITE
+creates that exposure and should say so plainly.
+
+Three things bound it, and none eliminates it. Rejection for active harm survives
+unchanged, so the case where a type is dangerous rather than merely broken is still
+refused listing. The `deprecated` and `withdrawn` states give the project the first
+mechanism it has ever had to respond after listing, which is a net improvement on the
+current directory, where a type once added can only be added. And the index makes the
+tier machine-readable, so a consumer can refuse an unvetted type by policy rather
+than by reading a web page, which is the only mitigation here that works without a
+human noticing anything.
+
+What remains unmitigated is the case of a broken contrib type that nobody reports.
+Nothing in this ITE detects it, because detecting it is exactly the work the evidence
+criterion exists to make somebody else do, and a type in contrib is by definition one
+for which nobody has done that work. The honest statement of the trade is that this
+ITE moves the project from a small directory where every entry was read to a larger
+one where entries are labelled, and that the labelling is only as useful as the
+consumers who act on it.
 
 Evidence can be fabricated. Signing binds each run to a key rather than to a claim in
 a pull-request description, and the corpus digest prevents a corpus being rewritten
