@@ -188,13 +188,59 @@ this project does not control, so making either a consequence of tier would crea
 rule the current directory violates on the day it ships.
 
 [[criterion]]
-=== The criterion
+=== Acceptance and promotion criterion
 
-To be placed in vetted, a predicate type MUST ship three items of evidence in a
-signed bundle. Each is published, each can be checked by anyone, and none requires
-the checker to be an expert in the predicate's domain.
+To be placed in vetted, a predicate type MUST ship three items of evidence, published
+as a single signed bundle. In outline:
 
-E1: a conformance corpus with negative controls::
+[cols="1,3,4"]
+|===
+| | Item | What a reviewer checks
+
+| *E1*
+| A conformance corpus with negative controls
+| That the corpus exists, that every vector is labelled, and that it runs green in CI
+
+| *E2*
+| An implementation built from the specification text by someone other than its author
+| That the second implementer is named, is not the author, and has consented publicly
+
+| *E3*
+| Published run results, at least one taken blind, with a defect record
+| That the runs are published, pinned to a corpus digest, and that disagreements were
+  resolved in the specification text
+|===
+
+Each item is published, each can be checked by anyone, and none requires the checker
+to be an expert in the predicate's domain.
+
+[[signing]]
+==== Who signs, and with what
+
+The bundle is signed by *the party that produced the runs it contains*, not by the
+project and not by a central authority. Where two implementers each contribute runs,
+each signs their own; there is no combined signature and no requirement that the two
+parties trust one another.
+
+The signature is a DSSE envelope over an in-toto Statement, which is the format this
+repository already specifies and ships tooling for, so a submitter needs no key
+material, no format and no tool they do not already have in order to submit a
+predicate here. The subject is the corpus digest and the specification commit; the
+predicate carries the run records, the defect record and the implementation report.
+
+This ITE deliberately does *not* specify key distribution, a trust root, or an
+accepted-signer list. What the signature buys here is narrow and worth stating
+exactly: it binds a set of run results to a key and to a corpus digest, so that a run
+cannot later be attributed to a corpus it was not taken against, and so that a claim
+in a pull-request description is replaced by an artifact. It does not establish that
+the signer is trustworthy, and a maintainer checking the bundle is checking that it
+verifies against the key the submitter published, not that the key belongs to anyone
+in particular. Verifier policy over those keys is the deploying organisation's, as it
+is everywhere else in in-toto.
+
+[[e1]]
+==== E1 — a conformance corpus with negative controls
+
 Complete in-toto Statements, each labelled `MUST-ACCEPT`, `MUST-REJECT` or `INDETERMINATE`. Every `MUST-REJECT` vector
 cites the clause that rejects it and the layer at which rejection occurs; a vector
 rejected by schema validation alone does not count toward coverage, because
@@ -217,7 +263,9 @@ load-bearing, because a corpus of valid examples shows only that the author can
 write one valid document, and what a reviewer learns from a corpus is what the
 specification refuses.
 
-E2: an implementation built from the specification text by someone other than its author::
+[[e2]]
+==== E2 — an implementation built from the specification text by someone other than its author
+
 A named person, not an organisation, who was not a contributor to the
 specification as of the commit their first run was taken against, who has consented
 publicly to being named, and who states what their runs do and do not establish.
@@ -227,7 +275,9 @@ production-grade; a validator that reads a Statement and decides is sufficient. 
 language and principal tooling behind each implementation MUST be declared, because
 that is where correlation between two apparently independent readings lives.
 
-E3: published run results, at least one blind, with a defect record::
+[[e3]]
+==== E3 — published run results, at least one blind, with a defect record
+
 Each implementation's run against the full corpus, carrying the specification commit and
 corpus digest; a `blind` or `directed` label on every run; at least one blind run whose ordering is established by artifact; and a record of every place two
 implementations initially disagreed and what resolved it. The corpus is committed,
@@ -237,11 +287,11 @@ changing the corpus or specification. An empty defect record is possible and adm
 submission, though it is unexplained; the submission then records either a further
 blind run or why the schema surface is small enough that agreement was expected.
 
-The three items are published as an in-toto Statement signed by the party that
-produced them: subject, the corpus digest and specification commit; predicate, the
-run records, defect record and implementation report. Each implementer signs their
-own runs. This costs a submitter nothing they do not have, since envelope, Statement
-format and tooling all live in this repository.
+The three items are published together as the signed bundle described in
+<<signing>>.
+
+[[delegated-schemas]]
+==== Delegated schemas
 
 Where a schema is wholly delegated to an external specification that maintains its
 own conformance suite, E1 and E2 are satisfied by citing that suite as the index
