@@ -318,7 +318,8 @@ them.
   through E3 in the inverse direction. This admits the submitter who can find
   someone to write vectors but not someone to write an implementation.
 
-=== The index, and moving between tiers
+[[index]]
+=== The index
 
 A machine-readable index record per type carries the short name, the `predicateType`
 URI, the location of the specification, the tier, a status of `active`,
@@ -328,6 +329,128 @@ when a hosted type turns out to be superseded or harmful. `observed` records mak
 this the registry of predicate types rather than only of hosted ones, which the
 meeting asked for in the words "Puerco: Would be nice to have a registry of types for
 people like myself".
+
+[[lifecycle]]
+=== Lifecycle of a predicate type
+
+Every state a type can be in, and every transition between them, is listed here. A
+type is in exactly one state at any time, and the state is the `status` field of its
+index record together with its tier.
+
+.States
+[cols="1,2,4"]
+|===
+| State | Listed? | Meaning
+
+| `proposed`
+| No
+| A submission is open and has not yet been merged. Not in the index.
+
+| `contrib` / `active`
+| Yes
+| Hosted and listed. Not endorsed. The default landing state for every submission.
+
+| `vetted` / `active`
+| Yes
+| Hosted and listed, and the evidence in <<criterion>> has been checked.
+
+| `deprecated`
+| Yes, marked
+| Still resolvable and still documented, superseded or no longer passing. Nothing
+  breaks; readers are pointed at the replacement where one exists.
+
+| `withdrawn`
+| Yes, marked
+| Retained as a tombstone because the URI may still appear in attestations in the
+  wild. Actively discouraged. The record says why.
+
+| `observed`
+| Yes, as a registry entry only
+| Seen in use somewhere, not hosted here, asserting nothing about quality. This is
+  what makes the index a registry of predicate types rather than only of the ones
+  this repository hosts.
+|===
+
+.Transitions
+[cols="2,2,3,3"]
+|===
+| From | To | Trigger | Who decides
+
+| `proposed`
+| `contrib`
+| ITE-9 format, not a duplicate, not actively harmful
+| Maintainers, as today
+
+| `proposed`
+| rejected
+| Duplicate of a listed type, or actively harmful. These are the *only* two grounds
+  for rejection. Absence of evidence is never one.
+| Maintainers, with a written reason
+
+| `contrib`
+| `vetted`
+| An evidence bundle satisfying <<criterion>> through one of the three paths
+| Maintainers, after the objection period
+
+| `vetted`
+| `contrib`
+| The corpus ceases to pass and is not repaired within one release cycle
+| Maintainers, contestable
+
+| `vetted` or `contrib`
+| `deprecated`
+| Superseded by another type, or abandoned by its change controller
+| Change controller, or maintainers if unreachable
+
+| any hosted
+| `withdrawn`
+| Found to be actively harmful after listing
+| Maintainers
+
+| `deprecated`
+| `active`
+| The defect is repaired and the corpus passes again
+| Change controller, contestable
+
+| `observed`
+| `proposed`
+| Its change controller submits it for hosting
+| The change controller
+|===
+
+....
+                    duplicate or harmful
+        proposed ─────────────────────────> rejected
+            │
+            │ ITE-9 format, not a duplicate
+            v
+    ┌──> contrib ──────────────────────> vetted ──┐
+    │   (active)   evidence bundle       (active)  │
+    │       │      + objection period       │      │
+    │       │                                │     │
+    │       └────────────┐      corpus fails │     │
+    │                    │      unrepaired   │     │
+    │                    v      <────────────┘     │
+    │              deprecated <────────────────────┘
+    │                    │       superseded
+    │  repaired, corpus  │
+    └────────────────────┘
+                         │  found harmful
+                         v
+                    withdrawn  (tombstone, never deleted)
+
+    observed ──> proposed        (change controller submits for hosting)
+....
+
+Two properties of this diagram are deliberate. No transition deletes a record, because
+a `predicateType` URI that has been published may appear in attestations for years
+after the type stops being a good idea, and a resolver that returns nothing is worse
+than one that returns a tombstone. And every transition out of `vetted` is
+contestable by the mechanism at the end of this section, because a criterion that can
+demote without appeal is a criterion that will be argued about in private.
+
+[[moving-between-tiers]]
+=== Moving between tiers
 
 Promotion:: A pull request adding the evidence bundle. Maintainers confirm CI is
 green on the corpus, that the second implementer (or, under path three, the corpus
@@ -341,10 +464,20 @@ whichever is longer; governance MAY set another value. A promotion request with 
 activity for a month SHOULD move to deferred and MAY be re-opened at any time, the
 timeline ITE-1 applies to ITEs themselves. contrib entries do NOT expire.
 
+Rejection:: There are exactly two grounds on which a submission may be refused
+listing: it duplicates a type already listed, or it is actively harmful. Both are
+the grounds that apply today and neither is introduced by this ITE. Failing the
+evidence criterion is *not* a ground for rejection, and neither is a maintainer
+judging the predicate to be a poor idea; the consequence of failing the criterion is
+that the type is listed in contrib rather than vetted. A rejection is written down
+with its reason, because the alternative is a submission that stalls without anyone
+having said no.
+
 Demotion and deprecation:: A vetted type whose corpus ceases to pass, or which is
 superseded, moves to `deprecated` with a pointer to its replacement. A hosted type
-found to be harmful moves to `withdrawn`. Neither path exists today and both are
-needed regardless of what this ITE decides about tiers.
+found to be harmful moves to `withdrawn`. Records are marked, never deleted. Neither
+path exists today and both are needed regardless of what this ITE decides about
+tiers.
 
 Contest:: Every decision under this criterion is contestable with evidence: a tier
 decision by producing the evidence the criterion names, a demotion by re-running the
