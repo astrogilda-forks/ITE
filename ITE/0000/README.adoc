@@ -45,7 +45,7 @@ This ITE proposes the tiers and the rule that sorts a submission into one. The r
 is evidence a reviewer can check: a conformance corpus with negative controls, an
 implementation built from the specification text by someone other than its author,
 and published run results including one taken blind, released as a signed bundle.
-Three doors lead into vetted, so more than one kind of submitter can reach it.
+Three paths lead into vetted, so more than one kind of submitter can reach it.
 
 Nothing here changes who gets published. A submission that meets today's bar is
 accepted and listed exactly as it is today, in the contrib tier. The evidence is what
@@ -129,7 +129,7 @@ library, types listed here "are not mandated or endorsed".
 `vetted`:: A predicate type whose specification is determinate, in the sense defined
 in <<determinate>>, and has been independently implemented. Admission requires
 everything contrib requires, plus the evidence below through any of the three
-promotion paths, plus any subject-matter scope the project adopts.
+promotion paths in <<promotion-paths>>, plus any subject-matter scope the project adopts.
 
 Every submission lands in contrib by default and is listed. Failing the criterion is
 not a ground for rejection.
@@ -300,11 +300,12 @@ binding layer. Three of the thirteen listed types are that shape, and this is ho
 conformance work of SPDX, CycloneDX and any future body counts here without being
 rebuilt here.
 
-[[doors]]
-=== Three doors into vetted
+[[promotion-paths]]
+=== Promotion from contrib to vetted
 
-A single gate admits a single kind of submitter. Each door supplies the independence
-E2 is about from a different side.
+A single path admits a single kind of submitter. Each of the three below supplies the
+independence E2 is about from a different side, and a submission needs only one of
+them.
 
 . A commissioned second implementer. E1 through E3 as written.
 . Observed adoption. A contrib type in independent production use by parties
@@ -329,7 +330,7 @@ meeting asked for in the words "Puerco: Would be nice to have a registry of type
 people like myself".
 
 Promotion:: A pull request adding the evidence bundle. Maintainers confirm CI is
-green on the corpus, that the second implementer (or, under door three, the corpus
+green on the corpus, that the second implementer (or, under path three, the corpus
 author) is named and has consented, that a defect record is present, and that the
 signature verifies. That is a check that the evidence exists and passes, and it does
 not re-derive the domain judgement. ITE-9 already requires community communication
@@ -459,7 +460,7 @@ mis-calibrated, and MUST be changed, if any of the following holds:
 
 . Twelve months after adoption, either the submissions promoted under it are only
   those authored by the people who proposed it, or fewer than two types authored by
-  unrelated parties have been promoted through any of the three doors.
+  unrelated parties have been promoted through any of the three paths.
 . The criterion marks as failing a type demonstrably interoperating in the field
   between independent producers and consumers.
 . Any of the six artifacts named in the companion is unpublished one release cycle
