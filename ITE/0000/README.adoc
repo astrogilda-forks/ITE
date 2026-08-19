@@ -508,11 +508,6 @@ done by CI. That answers the expertise question directly.
 [[reasoning]]
 == Reasoning
 
-The argument in full, every alternative considered and why each was rejected, the
-tooling this proposes the project publish, and the open questions are in
-link:COMPANION.adoc[the companion document], which argues for this proposal and
-normatively states none of it. Three points belong here.
-
 Evidence has a property a judgement does not: the submitter can run it before
 submitting, which removes most of the round-trips that make the queue slow. The shape
 is not novel. The W3C Process, when assessing implementation experience, asks "are
@@ -531,6 +526,102 @@ It costs a submitter a second person, which is the expensive part, and the proje
 can lower that cost far more cheaply than any individual submitter can: any second
 person counts, a `seeking second implementer` label costs nothing, and the meeting
 can carry a standing slot for the ask.
+
+[[alternatives]]
+=== Alternatives considered
+
+Maintainer judgement guided by a rubric:: Still a reading task, still needs domain
+expertise, still does not transfer between reviewers. It formalises the question the
+meeting could not answer rather than replacing it.
+
+Artifact-based replay instead of person-based independence:: The strongest
+alternative: pin the specification at a commit, generate the vector matrix from the
+schema, and grant vetted when two independently submitted signed bundles agree, with
+no named second implementer. Three of its four mechanisms are better than what this
+ITE first proposed and have been adopted here: authorship defined at a commit,
+coverage computed by tooling, and the bundle signed and digest-pinned. The fourth is
+not adopted, because dropping the named second person makes the criterion satisfiable
+only by parties who can run a project-supplied harness twice, and loses the semantic
+disagreements that appear when a human reads a sentence differently. Its cost, now
+inherited, is that the project must build and maintain the generator and harness.
+
+Requiring an organisational sponsor or named adopter at submission:: Sorts
+submissions by the submitter's employer and excludes individuals, students and
+academics, a substantial part of this community. Retained only as the adoption path,
+where it measures uptake of an existing type rather than acting as a barrier to entry.
+
+Time in contrib alone:: A reasonable second path and an unreasonable only path, since
+it makes the tier a function of patience.
+
+A prose style guide:: The attestations style guide raised at the same meeting supplies
+a useful shape — graded levels, where an adopter implements the level it can support
+rather than passing or failing one bar — and this ITE borrows it. Its content
+addresses how attestations are presented to package consumers in registry interfaces;
+the string "predicate" does not appear on any of its five pages, so it does not
+address determinacy, which is what a tier boundary has to answer.
+
+A shared conformance harness only, with no tiers:: Attractive, and half of what is
+proposed here, but a harness with nothing to sort on leaves the queue where it is.
+The tiers give the evidence somewhere to land.
+
+[[falsification]]
+=== The criterion applied to the current directory, and when to abandon it
+
+This ITE makes a claim checkable before adoption, and the check has been run. The
+criterion was applied on paper, as of 2026-08-08, to all thirteen listed vetted types
+and all eight open predicate pull requests. *No current entry and no open submission
+satisfies E1 today, including the drafter's own.* No listed type ships a conformance
+corpus in this repository, and every open predicate pull request consists of a
+specification document, the directory listing and in three cases a protobuf
+definition; none ships vectors, an index record or a signed bundle. The drafter's
+pull request 570 is one of the eight and fails on those terms too.
+
+That result is why the falsification conditions read as they do. A criterion nobody
+has yet done the work for admits nobody on the day it is written, which is a fact
+about a new requirement rather than evidence of mis-calibration. But it is also
+exactly what a badly calibrated criterion looks like from the inside, so the
+conditions under which it should be judged wrong are fixed here, in advance, rather
+than argued about later. The criterion is mis-calibrated, and MUST be changed, if any
+of the following holds:
+
+. Twelve months after adoption, either the submissions promoted under it are only
+  those authored by the people who proposed it, or fewer than two types authored by
+  unrelated parties have been promoted through any of the three paths.
+. The criterion marks as failing a type demonstrably interoperating in the field
+  between independent producers and consumers.
+. Any of the artifacts named in <<infrastructure>> is unpublished one release cycle
+  after adoption. The claim that a submitter can self-check is false until they exist.
+
+Each condition names a date, a count or an artifact, so whether it has fired is a
+matter of record rather than opinion.
+
+[[unresolved]]
+=== Unresolved
+
+. Should the repository evolve to be a hosting location for predicates? Asked at the
+  meeting, unanswered, and upstream of everything here. This ITE argues that tiering
+  makes hosting affordable, because the cost is unbounded only while every hosted type
+  carries implied endorsement. That argument is recorded and left open.
+. Which existing types are vetted on adoption? This draft says all, by grandfathering;
+  reclassifying any needs its own discussion and the affected authors' consent.
+. Whether a subject-matter scope is adopted alongside the criterion, and what it is.
+  This ITE proposes composition and takes no position on the scope, which is the
+  maintainers' to draw.
+. Who assigns tiers, and by what majority? Maintainers, following existing governance,
+  with an announcement and a bounded objection period. RFC 8126's Designated Expert is
+  the nearest existing mechanism if a named role is wanted.
+. Does contrib accept types the maintainers consider poorly conceived? This draft says
+  yes, absent duplication or harm, because a hosting tier with a quality filter is a
+  vetted tier with extra steps. Reasonable people will disagree, and <<security>>
+  states the exposure this creates.
+. May a contrib type hold a URI under `https://in-toto.io/attestation/`, and who
+  decides the redirect list? Left unchanged and unanswered, because the drafter has a
+  submission claiming such a URI and should not write the rule that governs it. The
+  index records each type's redirect status so that whoever decides, the decision is
+  recorded.
+. Follow-on: the predicate taxonomy. Issue 377 asks for the ITE-10 classes and a
+  further subdivision of informational predicates. That is a separate document, which
+  should be argued on a survey of the existing types.
 
 [[backwards-compatibility]]
 == Backwards Compatibility
@@ -639,30 +730,9 @@ ownership of either.
 [[testing]]
 == Testing
 
-This ITE makes a claim testable before adoption, and the first test has been run. The
-criterion was applied on paper, as of 2026-08-08, to all thirteen listed vetted types
-and all eight open predicate pull requests. No current entry and no open submission satisfies E1
-today, including the drafter's own. No listed type ships a conformance
-corpus in this repository, and every open predicate pull request consists of a
-specification document, the directory listing and in three cases a protobuf
-definition; none ships vectors, an index record or a signed bundle. The drafter's
-pull request 570 is one of the eight and fails on those terms too.
-
-That result is why the falsification conditions read as they do. A criterion nobody
-has yet done the work for admits nobody on the day it is written, which is a fact
-about a new requirement rather than evidence of mis-calibration. The criterion is
-mis-calibrated, and MUST be changed, if any of the following holds:
-
-. Twelve months after adoption, either the submissions promoted under it are only
-  those authored by the people who proposed it, or fewer than two types authored by
-  unrelated parties have been promoted through any of the three paths.
-. The criterion marks as failing a type demonstrably interoperating in the field
-  between independent producers and consumers.
-. Any of the six artifacts named in the companion is unpublished one release cycle
-  after adoption. The claim that a submitter can self-check is false until they exist.
-
-Each condition names a date, a count or an artifact, so whether it has fired is a
-matter of record rather than opinion.
+This ITE changes a process and adds no code to in-toto, so it has no testing needs of
+its own. The conformance testing it asks *submitters* to do is specified in
+<<criterion>>, and the CI job that runs a corpus is in <<infrastructure>>.
 
 [[prototype-implementation]]
 == Prototype Implementation
@@ -675,9 +745,11 @@ on `docs/validation.md` and the existing `rust/src/validator.rs`; a corpus-runne
 target and its CI job; a vector generator that computes coverage; and generators for
 the implementation-report table and for proposed `observed` records.
 
-A public worked example of an evidence bundle in the E1-E3 shape already exists and is
-linked below. It is an existence proof of the format, explicitly not a template the
-criterion is shaped around: the dry run above records that bundle failing E1.
+A public worked example of an evidence bundle in the E1-E3 shape already exists,
+accompanying the drafter's own predicate submission in pull request 570. It is an
+existence proof that the format can be produced, explicitly not a template the
+criterion is shaped around: the dry run in <<falsification>> records that same bundle
+failing E1.
 
 [[references]]
 == References
@@ -691,7 +763,7 @@ criterion is shaped around: the dry run above records that bundle failing E1.
 . link:https://www.w3.org/policies/process/[W3C Process Document]
 . link:https://www.rfc-editor.org/rfc/rfc2026[RFC 2026]
 . link:https://www.rfc-editor.org/rfc/rfc8126[RFC 8126]
-. link:COMPANION.adoc[Companion: reasoning, alternatives, tooling and open questions]
+. link:https://github.com/in-toto/attestation/issues/377[in-toto/attestation issue 377: Should we categorize different predicate types?]
 
 [[disclosure]]
 == Disclosure
