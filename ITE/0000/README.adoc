@@ -241,7 +241,8 @@ is everywhere else in in-toto.
 [[e1]]
 ==== E1 — a conformance corpus with negative controls
 
-Complete in-toto Statements, each labelled `MUST-ACCEPT`, `MUST-REJECT` or `INDETERMINATE`. Every `MUST-REJECT` vector
+Complete in-toto Statements, each labelled `MUST-ACCEPT`, `MUST-REJECT` or
+`INDETERMINATE`. Every `MUST-REJECT` vector
 cites the clause that rejects it and the layer at which rejection occurs; a vector
 rejected by schema validation alone does not count toward coverage, because
 generated bindings already enforce that and such a vector tests the parser.
@@ -249,7 +250,8 @@ Rejection is a property the specification declares: the framework's default is t
 "Consumers MUST ignore unrecognized fields unless otherwise noted in the predicate
 specification", so a `MUST-REJECT` resting on a constraint the text never states is a
 defect in the corpus. Every `INDETERMINATE` vector states which readings the
-specification admits. Coverage is a count the runner emits, over every required field, every field constrained to a range or enumeration, and every parsing rule
+specification admits. Coverage is a count the runner emits, over every required field,
+every field constrained to a range or enumeration, and every parsing rule
 declared as differing from the defaults; those are derivable from the schema, so the
 number is a fact anyone can recompute. Vectors MAY be generated or hand-written, and
 generated vectors are a floor, since a generator cannot see the semantic cases a
@@ -279,7 +281,8 @@ that is where correlation between two apparently independent readings lives.
 ==== E3 — published run results, at least one blind, with a defect record
 
 Each implementation's run against the full corpus, carrying the specification commit and
-corpus digest; a `blind` or `directed` label on every run; at least one blind run whose ordering is established by artifact; and a record of every place two
+corpus digest; a `blind` or `directed` label on every run; at least one blind run
+whose ordering is established by artifact; and a record of every place two
 implementations initially disagreed and what resolved it. The corpus is committed,
 or its digest published, before the second implementer's first run, and the blind
 implementation and its output are each committed on their own ahead of any commit
