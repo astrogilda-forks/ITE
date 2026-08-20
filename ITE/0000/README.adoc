@@ -757,19 +757,42 @@ its own. The conformance testing it asks *submitters* to do is specified in
 [[prototype-implementation]]
 == Prototype Implementation
 
-The runnable parts accompany this ITE's pull request, in a fork, as one candidate
-layout the maintainers may replace wholesale: an index schema and a generator that
-emits a first index from the current `spec/predicates` directory and reconciles it
-against `layouts/index.redirects`; a submission checker; a reference validator built
-on `docs/validation.md` and the existing `rust/src/validator.rs`; a corpus-runner make
-target and its CI job; a vector generator that computes coverage; and generators for
-the implementation-report table and for proposed `observed` records.
+This ITE changes a process and adds no code to in-toto, so ITE-1 permits omitting this
+section. It is kept, and rewritten, because the proposal's whole argument is that a
+reviewer should be able to check a claim instead of taking it, and the first document
+that has to survive that standard is this one.
 
-A public worked example of an evidence bundle in the E1-E3 shape already exists,
-accompanying the drafter's own predicate submission in pull request 570. It is an
-existence proof that the format can be produced, explicitly not a template the
-criterion is shaped around: the dry run in <<falsification>> records that same bundle
-failing E1.
+*What does not exist.* None of the tooling in <<infrastructure>> is written: not the
+index generator, not the workflow that runs it, and none of the six artifacts named
+there. An earlier revision of this section said the runnable parts accompanied this
+pull request in a fork. They did not and do not; this pull request adds one file. That
+sentence asked a reviewer to credit an artifact they could not open, which is the exact
+move this ITE exists to replace, and it is withdrawn rather than explained. The
+drafter's offer to write and hand over the initial generator and workflow stands and is
+recorded in <<infrastructure>>, where the maintenance question belongs.
+
+*What does exist, and can be opened now.* A corpus in the E1 shape is published at
+link:https://github.com/astrogilda/aee-conformance[astrogilda/aee-conformance],
+accompanying the drafter's predicate submission in pull request 570: labelled accepting,
+rejecting and indeterminate vectors, each rejecting vector carrying the code set it is
+expected to produce, run by a runner that emits a report rather than an exit status.
+
+The part worth a maintainer's attention is not the corpus. A verifier written by someone
+other than the specification's author, in a different language, runs against it, and the
+first thing the pair disagreed about was a bound the specification had not stated: the
+two implementations chose different maximum JSON nesting depths, so for every depth
+between them the same bytes were valid evidence to one conformant verifier and malformed
+to the other. Five further implementations by the specification's own author had agreed
+with each other at every depth and could not have surfaced it. The bound is now stated
+normatively in the specification text, which is where E3 asks disagreements to be
+resolved. That is the mechanism this ITE proposes, doing the thing it is proposed for,
+on a real submission, before publication.
+
+None of which makes it a passing example, and the criterion is not shaped around it. The
+corpus is not shipped with the submission and there is no index record to reach it from,
+so it fails E1 as written, and it is not published as a signed bundle. The dry run in
+<<falsification>> records the drafter's own submission failing on those terms alongside
+every other open submission, and that remains the honest reading.
 
 [[references]]
 == References
