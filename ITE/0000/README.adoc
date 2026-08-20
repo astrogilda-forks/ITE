@@ -408,8 +408,10 @@ index record together with its tier.
 | Maintainers
 
 | `deprecated`
-| `active`
-| The defect is repaired and the corpus passes again
+| `contrib` or `vetted`, `active`
+| Maintenance resumes, or the type that superseded it is itself withdrawn. The type
+  returns to whichever tier its evidence supports at that time; it is not restored to
+  the tier it left.
 | Change controller, contestable
 
 | `observed`
@@ -419,35 +421,45 @@ index record together with its tier.
 |===
 
 ....
-                    duplicate or harmful
-        proposed ─────────────────────────> rejected
-            │
-            │ ITE-9 format, not a duplicate
-            v
-    ┌──> contrib ──────────────────────> vetted ──┐
-    │   (active)   evidence bundle       (active)  │
-    │       │      + objection period       │      │
-    │       │                                │     │
-    │       └────────────┐      corpus fails │     │
-    │                    │      unrepaired   │     │
-    │                    v      <────────────┘     │
-    │              deprecated <────────────────────┘
-    │                    │       superseded
-    │  repaired, corpus  │
-    └────────────────────┘
-                         │  found harmful
-                         v
-                    withdrawn  (tombstone, never deleted)
+                    duplicate, or actively harmful
+      proposed ──────────────────────────────────────> rejected
+          │
+          │ ITE-9 format, not a duplicate
+          v
+                  evidence bundle + objection period
+      contrib ──────────────────────────────────────>  vetted
+     (active) <──────────────────────────────────────  (active)
+          │           corpus fails, unrepaired            │
+          │                                               │
+          │            superseded, or abandoned           │
+          └───────────────────┐         ┌─────────────────┘
+                              v         v
+                              deprecated
+                ┌──────────────────┴──────────────────┐
+                │                                     │
+      maintenance resumes                    found actively harmful
+                │                                     │
+                v                                     v
+      contrib or vetted, whichever                withdrawn
+      the evidence then supports          (tombstone, never deleted)
 
-    observed ──> proposed        (change controller submits for hosting)
+      observed ──────> proposed     (change controller submits it for hosting)
 ....
 
-Two properties of this diagram are deliberate. No transition deletes a record, because
-a `predicateType` URI that has been published may appear in attestations for years
-after the type stops being a good idea, and a resolver that returns nothing is worse
-than one that returns a tombstone. And every transition out of `vetted` is
-contestable by the mechanism at the end of this section, because a criterion that can
-demote without appeal is a criterion that will be argued about in private.
+The transitions table above is normative where it and the diagram differ. The diagram
+draws the `withdrawn` edge once, from `deprecated`, to stay readable; a type in any
+hosted state found to be actively harmful moves there directly.
+
+Three properties are deliberate. Losing the evidence costs a type its label and not its
+listing, so the only demotion the criterion produces is `vetted` back to `contrib` and
+nothing that consumes the type breaks. Deprecation is a separate axis reached from
+either tier, because being superseded and failing a corpus are different events and
+collapsing them would let a maintainer retire a type by letting its CI rot. And no
+transition deletes a record, because a `predicateType` URI that has been published may
+appear in attestations for years after the type stops being a good idea, and a resolver
+that returns nothing is worse than one that returns a tombstone. Every transition out of
+`vetted` is contestable by the mechanism at the end of this section, because a criterion
+that can demote without appeal is a criterion that will be argued about in private.
 
 [[moving-between-tiers]]
 === Moving between tiers
@@ -473,11 +485,19 @@ that the type is listed in contrib rather than vetted. A rejection is written do
 with its reason, because the alternative is a submission that stalls without anyone
 having said no.
 
-Demotion and deprecation:: A vetted type whose corpus ceases to pass, or which is
-superseded, moves to `deprecated` with a pointer to its replacement. A hosted type
-found to be harmful moves to `withdrawn`. Records are marked, never deleted. Neither
-path exists today and both are needed regardless of what this ITE decides about
-tiers.
+Demotion:: A vetted type whose corpus ceases to pass, and is not repaired within one
+release cycle, returns to *contrib*. It stays listed, its URI does not change and
+nothing that consumes it breaks; what lapsed is the evidence, so what it loses is the
+label. This is the only demotion the criterion produces, and it is undone by the
+mechanism that produced it: repair the corpus, publish the run, take the promotion
+path again.
+
+Deprecation and withdrawal:: These are not demotions, they are not produced by the
+criterion, and they do not depend on tier. A type in either tier that is superseded, or
+abandoned by its change controller, moves to `deprecated` with a pointer to its
+replacement where one exists. A hosted type in any state found to be actively harmful
+moves to `withdrawn`. Records are marked, never deleted. Neither path exists today and
+both are needed regardless of what this ITE decides about tiers.
 
 Contest:: Every decision under this criterion is contestable with evidence: a tier
 decision by producing the evidence the criterion names, a demotion by re-running the
