@@ -236,7 +236,8 @@ the build on a difference. The drafter offers to write both.
 == Prototype Implementation
 
 None of that tooling is written. A corpus in the E1 shape is published at
-link:https://github.com/astrogilda/aee-conformance[astrogilda/aee-conformance], where a second
+link:https://github.com/astrogilda/agent-evidence-vectors[astrogilda/agent-evidence-vectors],
+461 vectors across 8 corpora at tag v0.10.1, where a second
 author's verifier, in another language, disagreed with the first over a maximum JSON nesting
 depth the specification had not stated: between those depths the same bytes were valid to 1
 conformant verifier and malformed to the other. The bound is now normative, where E3
@@ -245,8 +246,8 @@ asks it to be.
 [[references]]
 == References
 
-. link:https://github.com/`in-toto/attestation`/blob/main/docs/new_predicate_guidelines.md[Guidelines for new predicates]
-. link:https://github.com/`in-toto/attestation`/blob/main/spec/predicates/README.md[The predicate directory]
+. link:https://github.com/in-toto/attestation/blob/main/docs/new_predicate_guidelines.md[Guidelines for new predicates]
+. link:https://github.com/in-toto/attestation/blob/main/spec/predicates/README.md[The predicate directory]
 . link:https://www.rfc-editor.org/rfc/rfc2026[RFC 2026]
 . link:https://www.rfc-editor.org/rfc/rfc8126[RFC 8126]
-. link:https://github.com/`in-toto/attestation`/issues/377[`in-toto/attestation` issue 377]
+. link:https://github.com/in-toto/attestation/issues/377[`in-toto/attestation` issue 377]
