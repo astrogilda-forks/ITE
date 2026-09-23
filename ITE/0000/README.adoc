@@ -236,7 +236,7 @@ the build on a difference. The drafter offers to write both.
 == Prototype Implementation
 
 None of that tooling is written. A corpus in the E1 shape is published at
-link:https://github.com/astrogilda/agent-evidence-vectors[astrogilda/agent-evidence-vectors],
+link:https://github.com/probityai/agent-evidence-vectors[probityai/agent-evidence-vectors],
 461 vectors across 8 corpora at tag v0.10.1, where a second
 author's verifier, in another language, disagreed with the first over a maximum JSON nesting
 depth the specification had not stated: between those depths the same bytes were valid to 1
