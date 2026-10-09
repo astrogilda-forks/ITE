@@ -95,7 +95,10 @@ Complete Statements, each labelled `MUST-ACCEPT`, `MUST-REJECT` or `INDETERMINAT
 `MUST-REJECT` vector cites the clause that rejects it and the layer at which rejection occurs,
 and one rejected by schema validation alone does not count toward coverage. The runner counts
 coverage over every required field, every constrained field and each non-default parsing rule.
-The corpus is published and run green in CI.
+The corpus is published at a released tag, and its digest is recorded in the type's index record.
+The registry workflow replays every listed corpus with one pinned runner, the same runner and
+the same pin for every type, so `vetted` means one check passed by all, never a check each
+submitter wrote for themselves. A corpus that fails that run is not `vetted`, whatever its own CI says.
 
 [[e2]]
 ==== E2, an implementation by someone other than the author
@@ -237,7 +240,9 @@ the build on a difference. The drafter offers to write both.
 
 None of that tooling is written. A corpus in the E1 shape is published at
 link:https://github.com/probityai/agent-evidence-vectors[probityai/agent-evidence-vectors],
-461 vectors across 8 corpora at tag v0.10.1, where a second
+published as the PyPI package `agent-evidence-vectors` and as a GitHub Action that replays a
+named corpus at a tag against any verifier, which is the shape the pinned runner above needs.
+At tag v0.10.1 it held 461 vectors across 8 corpora, and there a second
 author's verifier, in another language, disagreed with the first over a maximum JSON nesting
 depth the specification had not stated: between those depths the same bytes were valid to 1
 conformant verifier and malformed to the other. The bound is now normative, where E3
